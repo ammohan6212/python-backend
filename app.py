@@ -4,7 +4,8 @@ from flask_wtf.csrf import CSRFProtect
 import os 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback-secret') 
+password = os.getenv("SECRET_KEY")
+app.config['SECRET_KEY'] = password
 csrf = CSRFProtect(app)
 
 @app.route('/', methods=['GET', 'POST'])
