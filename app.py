@@ -12,7 +12,7 @@ app.secret_key = app.config['APP_SECRET_KEY']  # Loaded securely from .env
 
 csrf = CSRFProtect(app)
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
     form = NameForm()
     if form.validate_on_submit():
