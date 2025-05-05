@@ -104,9 +104,7 @@ pipeline {
             steps {
                 script {
                     echo "VERSION=${env.VERSION}"
-                    sh """
-                    docker build -t flask:${env.VERSION} .
-                    """
+                    sh "docker build -t flask:${env.VERSION} ."
                 }
             }
         }
