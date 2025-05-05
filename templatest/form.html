@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+<head><title>CSRF Form</title></head>
+<body>
+  <form method="POST">
+    {{ form.hidden_tag() }}
+    {{ form.name.label }}<br>
+    {{ form.name(size=20) }}<br><br>
+    {{ form.submit() }}
+  </form>
+</body>
+</html>
+
