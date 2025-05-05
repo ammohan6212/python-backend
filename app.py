@@ -3,7 +3,6 @@ from forms import NameForm
 from flask_wtf.csrf import CSRFProtect
 
 app = Flask(__name__)
-# app.secret_key = 'super-secret-key'  # Needed for CSRF
 csrf = CSRFProtect(app)
 
 @app.route('/', methods=['GET', 'POST'])
