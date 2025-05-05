@@ -160,7 +160,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com',"docker_credentials") {  // here we need to install the docker pipeline plugin to this
-                        docker.image("mohan14242/mohan:4.0").push()
+                        docker.image("mohan14242/flask:latest").push()
                     }
                 }
             }
