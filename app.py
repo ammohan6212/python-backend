@@ -1,8 +1,10 @@
 from flask import Flask, render_template, redirect, url_for
 from forms import NameForm
 from flask_wtf.csrf import CSRFProtect
+import os 
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback-secret') 
 csrf = CSRFProtect(app)
 
 @app.route('/', methods=['GET', 'POST'])
