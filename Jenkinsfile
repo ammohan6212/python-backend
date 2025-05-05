@@ -118,6 +118,7 @@ pipeline {
                 snyk container test flask:latest 
                 snyk container test flask:latest --file=dockerfile
                 trivy image flask:latest > trivyimage.txt
+                
                 cat trivyimage.txt
                 '''
             }
