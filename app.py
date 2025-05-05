@@ -5,7 +5,7 @@ from flask_wtf.csrf import CSRFProtect
 app = Flask(__name__)
 csrf = CSRFProtect(app)
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/name', methods=['GET', 'POST'])
 def index():
     form = NameForm()
     if form.validate_on_submit():
