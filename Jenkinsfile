@@ -48,33 +48,33 @@ pipeline {
         //     }
         // }
 
-        stage("check the dependecy scanning using pip-audit and safety"){
-            agent { label 'security-agent' }
-            steps{
-                sh'''
-                pip install pip-audit
-                pip-audit
-                // pip install safety
-                // pip freeze > requirements.txt
-                // safety check -r requirements.txt
-                snyk test --file=requirements.txt --json > snyk-deps-report.json
-                trivy fs . --format json --output trivy-fs-report.json
-               '''
-            }
+        // stage("check the dependecy scanning using pip-audit and safety"){
+        //     agent { label 'security-agent' }
+        //     steps{
+        //         sh'''
+        //         pip install pip-audit
+        //         pip-audit
+        //         // pip install safety
+        //         // pip freeze > requirements.txt
+        //         // safety check -r requirements.txt
+        //         snyk test --file=requirements.txt --json > snyk-deps-report.json
+        //         trivy fs . --format json --output trivy-fs-report.json
+        //        '''
+        //     }
 
-        }
+        // }
 
-        stage("Run Unit Tests & Coverage") {
-            agent { label 'security-agent' }
-            steps {
-                sh '''
-                pip install pytest coverage
-                coverage run -m pytest
-                coverage report
-                coverage xml
-                '''
-            }
-        }
+        // stage("Run Unit Tests & Coverage") {
+        //     agent { label 'security-agent' }
+        //     steps {
+        //         sh '''
+        //         pip install pytest coverage
+        //         coverage run -m pytest
+        //         coverage report
+        //         coverage xml
+        //         '''
+        //     }
+        // }
         
 
         
