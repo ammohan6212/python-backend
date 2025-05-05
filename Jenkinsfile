@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    environment {
+        // Optionally initialize with a default; will be overwritten dynamically
+        VERSION = ''
+    }
 
     stages {
         // stage('Clear Workspace') {
@@ -104,7 +108,7 @@ pipeline {
             steps {
                 script {
                     echo "VERSION=${env.VERSION}"
-                    sh 'docker build -t flask:${env.VERSION} .'
+                    sh "docker build -t flask:${env.VERSION} ."
                 }
             }
         }
