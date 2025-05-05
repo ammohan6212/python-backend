@@ -136,6 +136,7 @@ pipeline {
             steps{
                 sh '''
                 trivy fs . --scanners secret --format json --output trivy-secrets.json
+                cat trivy-secrets.json
             '''
             }
         }
