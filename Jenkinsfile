@@ -189,47 +189,47 @@ pipeline {
 //                 }
 //             }
 //         }
-        post {
-    always {
-        script {
-            slackSend (
-                channel: '#ci-pipeline-status',
-                color: '#CCCCCC',
-                message: "🔔 Pipeline *#${env.BUILD_NUMBER}* finished. Result: *${currentBuild.currentResult}*"
-            )
-        }
-    }
+//         post {
+//     always {
+//         script {
+//             slackSend (
+//                 channel: '#ci-pipeline-status',
+//                 color: '#CCCCCC',
+//                 message: "🔔 Pipeline *#${env.BUILD_NUMBER}* finished. Result: *${currentBuild.currentResult}*"
+//             )
+//         }
+//     }
 
-    success {
-        script {
-            slackSend (
-                channel: '#ci-pipeline-status',
-                color: 'good',
-                message: "✅ Pipeline *#${env.BUILD_NUMBER}* succeeded for version *${env.VERSION}* on branch *${env.BRANCH_NAME}*"
-            )
-        }
-    }
+//     success {
+//         script {
+//             slackSend (
+//                 channel: '#ci-pipeline-status',
+//                 color: 'good',
+//                 message: "✅ Pipeline *#${env.BUILD_NUMBER}* succeeded for version *${env.VERSION}* on branch *${env.BRANCH_NAME}*"
+//             )
+//         }
+//     }
 
-    failure {
-        script {
-            slackSend (
-                channel: '#ci-pipeline-status',
-                color: 'danger',
-                message: "❌ Pipeline *#${env.BUILD_NUMBER}* failed on branch *${env.BRANCH_NAME}*. Check Jenkins for logs."
-            )
-        }
-    }
+//     failure {
+//         script {
+//             slackSend (
+//                 channel: '#ci-pipeline-status',
+//                 color: 'danger',
+//                 message: "❌ Pipeline *#${env.BUILD_NUMBER}* failed on branch *${env.BRANCH_NAME}*. Check Jenkins for logs."
+//             )
+//         }
+//     }
 
-    unstable {
-        script {
-            slackSend (
-                channel: '#ci-pipeline-status',
-                color: 'warning',
-                message: "⚠️ Pipeline *#${env.BUILD_NUMBER}* is unstable. Review the test/report stages."
-            )
-        }
-    }
-}
+//     unstable {
+//         script {
+//             slackSend (
+//                 channel: '#ci-pipeline-status',
+//                 color: 'warning',
+//                 message: "⚠️ Pipeline *#${env.BUILD_NUMBER}* is unstable. Review the test/report stages."
+//             )
+//         }
+//     }
+// }
 
 
 
