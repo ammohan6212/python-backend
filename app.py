@@ -5,12 +5,13 @@ from flask_wtf.csrf import CSRFProtect
 app = Flask(__name__)
 csrf = CSRFProtect(app)
 
-@app.route('/name', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def index():
     form = NameForm()
     if form.validate_on_submit():
+        # Safe to handle POST input here
         name = form.name.data
-        return f'Hello, {name}!'
+        return f"Hello, {name}!"
     return render_template('form.html', form=form)
 
 if __name__ == "__main__":
