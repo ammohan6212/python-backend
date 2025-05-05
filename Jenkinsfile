@@ -101,7 +101,7 @@ pipeline {
         //     }
         // }
         stage("Docker Build Stage") {
-            agent { label 'docker-agent' }
+            agent { label 'security-agent' }
             steps {
                 script {
                     echo "VERSION=${env.VERSION}"
