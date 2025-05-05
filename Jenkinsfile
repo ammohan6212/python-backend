@@ -150,7 +150,7 @@ pipeline {
             agent { label 'security-agent' }
             steps {
                 sh '''
-                docker tag flask:${env.VERSION} mohan14242/flask:${env.VERSION}
+                docker tag flask:latest mohan14242/flask:latest
                 '''
             }
             
