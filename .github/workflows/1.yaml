@@ -1,0 +1,225 @@
+name: creating the ci pipeline
+
+on: 
+  push: 
+    branches: 
+      - dev 
+
+jobs: 
+  clone-and-tag: 
+    runs-on: ubuntu-latest 
+
+    steps: 
+      - name: Checkout the dev branch 
+        uses: actions/checkout@v4 
+        with: 
+          ref: dev 
+          fetch-depth: 0 
+
+      - name: Fetch all tags 
+        run: git fetch --tags 
+
+      - name: Get the latest tag 
+        id: get_tag 
+        run: | 
+          VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Print the version from env 
+        run: echo "Version is $VERSION"
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install Python Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Lint the Code
+        run: |
+          pip install flake8
+          flake8 src/main.py
+      - name: Dependency Scanning
+        run: |
+          pip install pip-audit safety
+          pip-audit
+          pip freeze > requirements.txt
+          safety check -r requirements.txt
+      - name: set up snyk cli to check for security issue
+        uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
+        env:
+          # This is where you will need to introduce the Snyk API token created with your Snyk account
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Snyk Code test
+        run: snyk code test --sarif > snyk-code.sarif 
+
+      - name: Trivy FS Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          format: 'json'
+          output: 'trivy-fs-report.json'
+      - name: Trivy Secrets Scanning
+        run: |
+          trivy fs . --scanners secret --format json --output trivy-secrets.json
+      
+  
+      
+
+  tests-and-sonarqube: 
+    runs-on: ubuntu-latest 
+    needs: clone-and-tag 
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v3
+    - name: Unit Tests & Coverage
+      run: |
+        pip install pytest coverage
+        coverage run -m pytest
+        coverage report
+        coverage xml
+    - name: Set up Java 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Run SonarQube Scan
+      uses: sonarsource/sonarqube-scan-action@master  # ✅ use tagged version
+      env:
+        SONAR_TOKEN: sqa_3050d7fe13176a6b23134a359fc908e20595c17e  # ✅ Best practice: store secrets in GitHub Secrets
+        SONAR_HOST_URL: http://34.9.212.79:9000/
+    - name: Wait for SonarQube Quality Gate
+      uses: sonarsource/sonarqube-quality-gate-action@master
+      timeout-minutes: 5
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  
+
+  build-push-artifact: 
+    runs-on: ubuntu-latest
+    needs: tests-and-sonarqube 
+    steps:
+      - name: Checkout the code 
+        uses: actions/checkout@v4
+
+      - name: Display the files 
+        run: ls -la
+
+      - name: Upload the src folder as artifact 
+        uses: actions/upload-artifact@v4 
+        with:
+          name: src-code-artifact 
+          path: static/
+
+        
+  
+  dockerbuild-test: 
+    runs-on: ubuntu-latest 
+    needs: tests-and-sonarqube 
+    steps:
+      - name: checkout the source code 
+        uses: actions/checkout@v3 
+      
+      - name: Docker Build
+        run: |
+          docker build -t $DOCKER_IMAGE_NAME:${{ env.VERSION }} .
+      - name: Snyk Container Scan
+        run: |
+          snyk container test $DOCKER_IMAGE_NAME:${{ env.VERSION }} --json > trivy-image-report.json
+          trivy image $DOCKER_IMAGE_NAME:${{ env.VERSION }} > trivyimage.txt
+      - name: Trivy Secrets Scanning
+        run: |
+          trivy fs . --scanners secret --format json --output trivy-secrets.json
+      - name: IAC Scanning
+        run: |
+          snyk iac test terraform/main.tf --json > snyk-iac-report.json
+          trivy config ./terraform/ --format json --output trivy-iac-report.json
+      - name: Docker Login & Push
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          docker push $DOCKER_IMAGE_NAME:${{ env.VERSION }}
+      
+      
+      
+      
+    
+
+
+  # python-cli: 
+  #   runs-on:  ubuntu-latest 
+  #   steps:
+  #     - name: Checkout code 
+  #       uses: actions/checkout@v3
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: '3.10'
+
+  #     - name: Lint the Code (flake8)
+  #       run: |
+  #         pip install flake8
+  #         flake8 src/main.py
+  #     - name: Dependency Scanning - pip-audit & safety
+  #       run: |
+  #         pip install pip-audit
+  #         pip-audit
+  #         pip install safety
+  #         pip freeze > requirements.txt
+  #         safety check -r requirements.txt
+  #     - name: set up snyk cli to check for security issue
+  #       uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
+  #       env:
+  #         # This is where you will need to introduce the Snyk API token created with your Snyk account
+  #         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  #     - name: Snyk Code test
+  #       run: snyk code test --sarif > snyk-code.sarif 
+
+  #     ###perform the dependecy scanning using snyk
+
+  
+      
+  sonar-qube: 
+    runs-on: ubuntu-latest 
+    needs: clone-and-tag 
+    steps:
+      - name: Checkout code  # ❗ Required for analysis
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Run SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master  # ✅ use tagged version
+        env:
+          SONAR_TOKEN: sqa_3050d7fe13176a6b23134a359fc908e20595c17e  # ✅ Best practice: store secrets in GitHub Secrets
+          SONAR_HOST_URL: http://34.9.212.79:9000/
+       
+
+  
+  upload-src-artifact: 
+    runs-on: ubuntu-latest  # ❌ 'qube-latest' is invalid
+    needs: sonar-qube
+
+    steps:
+      - name: Checkout the code 
+        uses: actions/checkout@v4
+
+      - name: Display the files 
+        run: ls -la
+
+      - name: Upload the src folder as artifact 
+        uses: actions/upload-artifact@v4 
+        with:
+          name: src-code-artifact 
+          path: static/
+  
+  docker-image-and-scanning: 
+    runs-on: ubuntu-latest 
+
