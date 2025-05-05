@@ -113,6 +113,8 @@ pipeline {
             agent { label 'security-agent' }
             steps{
                 sh '''
+                
+                snyk auth 9d262b22-1f2c-4069-adb9-696793789926
                 snyk container test flask --format json --output trivy-image-report.json
                 trivy image flask > trivyimage.txt
                 '''
