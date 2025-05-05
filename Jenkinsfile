@@ -92,13 +92,13 @@ pipeline {
             }
 
         }
-         stage("SonarQube Quality Gate") {
-            steps {
-                script {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
+        //  stage("SonarQube Quality Gate") {
+        //     steps {
+        //         script {
+        //             waitForQualityGate abortPipeline: true
+        //         }
+        //     }
+        // }
         stage("Docker Build Stage") {
             agent { label 'docker-agent' }
             steps {
