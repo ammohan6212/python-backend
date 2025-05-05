@@ -115,7 +115,7 @@ pipeline {
                 sh '''
                 docker images 
                 snyk auth 9d262b22-1f2c-4069-adb9-696793789926
-                snyk container test flask:latest --format json --output trivy-image-report.json
+                snyk container test flask:latest 
                 trivy image flask:latest > trivyimage.txt
                 '''
             }
