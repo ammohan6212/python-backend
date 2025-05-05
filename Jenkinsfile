@@ -1,9 +1,6 @@
 pipeline {
     agent any
-    environment {
-        // Optionally initialize with a default; will be overwritten dynamically
-        VERSION = ''
-    }
+   
 
     stages {
         // stage('Clear Workspace') {
@@ -108,7 +105,7 @@ pipeline {
             steps {
                 script {
                     echo "VERSION=${env.VERSION}"
-                    sh "docker build -t flask:${env.VERSION} ."
+                    sh "docker build -t flask ."
                 }
             }
         }
@@ -116,8 +113,8 @@ pipeline {
             agent { label 'security-agent' }
             steps{
                 sh '''
-                snyk container test flask:${env.VERSION} --format json --output trivy-image-report.json
-                trivy image flask:${env.VERSION} > trivyimage.txt
+                snyk container test flask --format json --output trivy-image-report.json
+                trivy image flask > trivyimage.txt
                 '''
             }
         }
