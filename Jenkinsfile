@@ -157,6 +157,7 @@ pipeline {
         }
 
         stage('Push Docker Image') {
+            agent { label 'security-agent' }
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com',"docker_credentials") {  // here we need to install the docker pipeline plugin to this
