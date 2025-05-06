@@ -198,7 +198,7 @@ jobs:
           image-ref: 'flask:${{ needs.clone-and-tag.outputs.version }}'
           format: 'template'
           template: '@/contrib/sarif.tpl'
-          output: 'trivy-results.sarif'
+          output: 'trivy-results.txt'
           severity: 'CRITICAL,HIGH'
 
       - name: Upload Artifacts
@@ -207,12 +207,13 @@ jobs:
           name: container-scan-reports
           path: |
             snyk-image-report.json
+            trivy-results.txt
 
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          # Path to SARIF file relative to the root of the repository
-          sarif_file: trivy-results.sarif
+      # - name: Upload SARIF file
+      #   uses: github/codeql-action/upload-sarif@v3
+      #   with:
+      #     # Path to SARIF file relative to the root of the repository
+      #     sarif_file: trivy-results.sarif
        
 
       # - name: Docker Login & Push
