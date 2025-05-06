@@ -162,10 +162,13 @@ jobs:
     steps:
       - name: checkout the source code 
         uses: actions/checkout@v3 
-      
+      - name: displaying the version 
+        run: 
+          echo " version is ${{ needs.clone-and-tag.outputs.VERSION }}"
+
       - name: Docker Build
         run: |
-          docker build -t flask:${{ needs.clone-and-tag.outputs.VERSION }}.
+          docker build -t flask:${{ needs.clone-and-tag.outputs.VERSION }} .
       - name: Set up Snyk CLI
         uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
         env:
