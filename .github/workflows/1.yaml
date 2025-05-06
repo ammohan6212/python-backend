@@ -126,6 +126,13 @@ jobs:
     steps:
       - name: Checkout the code 
         uses: actions/checkout@v4
+      - name: Build zip artifact 
+        run: | 
+          mkdir build 
+          cp app.py build/ 
+          cp forms.py build/ 
+          cp templates build/ 
+          cd build && zip -r artifact.zip .
 
       - name: Display the files 
         run: ls -la
