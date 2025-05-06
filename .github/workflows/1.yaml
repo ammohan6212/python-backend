@@ -179,8 +179,8 @@ jobs:
 
       - name: Snyk Container Scan
         run: |
-          snyk container test flask:${{ env.VERSION }} --json > trivy-image-report.json
-          trivy image flask:${{ env.VERSION }} > trivyimage.txt
+          snyk container test flask:${{ needs.clone-and-tag.outputs.version }} --json > trivy-image-report.json
+          trivy image flask:${{ needs.clone-and-tag.outputs.version }} > trivyimage.txt
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
@@ -190,6 +190,7 @@ jobs:
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
+          
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
