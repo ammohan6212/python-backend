@@ -60,7 +60,7 @@ jobs:
           scan-type: 'fs'
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
-          
+
       - name: Upload Trivy Report
         uses: actions/upload-artifact@v3
         with:
@@ -234,6 +234,6 @@ jobs:
           name: src-code-artifact 
           path: static/
   
-  docker-image-and-scanning: 
-    runs-on: ubuntu-latest 
+  # docker-image-and-scanning: 
+  #   runs-on: ubuntu-latest 
 
