@@ -131,7 +131,7 @@ jobs:
           mkdir build 
           cp app.py build/ 
           cp forms.py build/ 
-          cp templates build/ 
+          cp -r templates build/ 
           cd build && zip -r artifact.zip .
 
       - name: Display the files 
