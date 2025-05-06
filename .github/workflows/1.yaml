@@ -4,6 +4,10 @@ on:
   push: 
     branches: 
       - dev 
+permissions:
+  security-events: write
+  contents: read
+
 
 jobs: 
   clone-and-tag: 
