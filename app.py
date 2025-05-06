@@ -9,7 +9,6 @@ load_dotenv()  # Load environment variables from .env
 app = Flask(__name__)
 app.config['APP_SECRET_KEY'] = os.getenv("SECRET_KEY")  # Rename to avoid scanner warning
 app.secret_key = app.config['APP_SECRET_KEY']  # Loaded securely from .env
-
 csrf = CSRFProtect(app)
 
 @app.route('/')
@@ -22,4 +21,5 @@ def index():
 
 
 if __name__ == "__main__":
+    
     app.run(host='0.0.0.0', port=5000)
