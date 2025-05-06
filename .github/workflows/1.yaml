@@ -9,7 +9,7 @@ jobs:
   clone-and-tag: 
     runs-on: ubuntu-latest 
     outputs:
-      version: ${{ steps.get_tag.outputs.VERSION }}
+      version: ${{ steps.get_tag.outputs.version }}
 
     steps: 
       - name: Checkout the dev branch 
@@ -25,7 +25,7 @@ jobs:
         id: get_tag 
         run: | 
           VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Print the version from env 
         run: echo "Version is $VERSION"
@@ -162,13 +162,14 @@ jobs:
     steps:
       - name: checkout the source code 
         uses: actions/checkout@v3 
+
       - name: displaying the version 
         run: 
-          echo " version is ${{ needs.clone-and-tag.outputs.version}}"
+          echo " version is ${{ needs.clone-and-tag.outputs.version }}"
 
       - name: Docker Build
         run: |
-          docker build -t flask:${{ needs.clone-and-tag.outputs.VERSION }} .
+          docker build -t flask:${{ needs.clone-and-tag.outputs.version }} .
       - name: Set up Snyk CLI
         uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
         env:
