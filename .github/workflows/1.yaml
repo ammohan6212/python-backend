@@ -40,7 +40,7 @@ jobs:
       - name: Lint the Code
         run: |
           pip install flake8
-          flake8 src/main.py
+          flake8 app.py
 
       - name: Dependency Scanning
         run: |
