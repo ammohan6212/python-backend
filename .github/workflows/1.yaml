@@ -124,10 +124,15 @@ jobs:
         distribution: 'temurin'
 
     - name: Run SonarQube Scan
-      uses: sonarsource/sonarqube-scan-action@master  # ✅ use tagged version
-      env:
-        SONAR_TOKEN: sqa_99bfa61f6eddfe30b677bdee31be4fba62e79614  # ✅ Best practice: store secrets in GitHub Secrets
-        SONAR_HOST_URL: http://34.55.243.214:9000/
+      uses: sonarsource/sonarqube-scan-action@master 
+      
+    - name: run sonar-scanner
+      run: |
+        sonar-scanner \
+           -Dsonar.projectKey=python-backend \
+          -Dsonar.sources=. \
+          -Dsonar.host.url=http://34.55.243.214:9000 \
+          -Dsonar.token=sqp_e61f34dbf5b675f5ee4894a35b49471fc6e88d6d
     
     # - name: Wait for SonarQube Quality Gate
     #   uses: sonarsource/sonarqube-quality-gate-action@master
@@ -227,41 +232,9 @@ jobs:
     
 
 
-  # python-cli: 
-  #   runs-on:  ubuntu-latest 
-  #   steps:
-  #     - name: Checkout code 
-  #       uses: actions/checkout@v3
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v4
-  #       with:
-  #         python-version: '3.10'
-
-  #     - name: Lint the Code (flake8)
-  #       run: |
-  #         pip install flake8
-  #         flake8 src/main.py
-  #     - name: Dependency Scanning - pip-audit & safety
-  #       run: |
-  #         pip install pip-audit
-  #         pip-audit
-  #         pip install safety
-  #         pip freeze > requirements.txt
-  #         safety check -r requirements.txt
-  #     - name: set up snyk cli to check for security issue
-  #       uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
-  #       env:
-  #         # This is where you will need to introduce the Snyk API token created with your Snyk account
-  #         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-  #     - name: Snyk Code test
-  #       run: snyk code test --sarif > snyk-code.sarif 
-
-  #     ###perform the dependecy scanning using snyk
 
   
 
   
 
-  # docker-image-and-scanning: 
-  #   runs-on: ubuntu-latest 
 
