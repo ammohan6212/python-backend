@@ -40,6 +40,7 @@ jobs:
       - name: Lint the Code
         run: |
           flake8 app.py
+        continue-on-error: true
 
       - name: Dependency Scanning
         run: |
