@@ -55,6 +55,8 @@ jobs:
         uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
         env:
           SNYK_TOKEN: 9d262b22-1f2c-4069-adb9-696793789926
+      - name: Authenticate Snyk
+        run: snyk auth 9d262b22-1f2c-4069-adb9-696793789926
 
       - name: Snyk Code test
         run: snyk code test --sarif > snyk-code.sarif 
@@ -178,6 +180,8 @@ jobs:
         uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
         env:
           SNYK_TOKEN: 9d262b22-1f2c-4069-adb9-696793789926
+      - name: Authenticate Snyk
+        run: snyk auth 9d262b22-1f2c-4069-adb9-696793789926
 
       - name: Snyk Container Scan
         run: |
