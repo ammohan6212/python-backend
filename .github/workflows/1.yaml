@@ -16,7 +16,7 @@ jobs:
           ref: dev 
           fetch-depth: 0 
 
-      - name: Fetch all tags 
+      - name: Fetch all tags1
         run: git fetch --tags 
 
       - name: Get the latest tag 
