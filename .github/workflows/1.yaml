@@ -204,11 +204,14 @@ jobs:
           path: |
             snyk-image-report.json
 
-      - name: Upload SARIF to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v4
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
         with:
-            sarif_file: trivy-results.sarif
-
+          # Path to SARIF file relative to the root of the repository
+          sarif_file: trivy-results.sarif
+          # Optional category for the results
+          # Used to differentiate multiple results for one commit
+          category: my-analysis-tool
       # - name: Docker Login & Push
       #   run: |
       #     echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
