@@ -188,7 +188,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'flask:${env.VERSION}'
+          image-ref: 'flask:${{ needs.clone-and-tag.outputs.version }}'
           format: 'template'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results.sarif'
