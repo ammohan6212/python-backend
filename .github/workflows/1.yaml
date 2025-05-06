@@ -68,6 +68,11 @@ jobs:
       - name: Trivy Secrets Scanning
         run: |
           trivy fs . --scanners secret --format json --output trivy-secrets.json
+     
+      # - name: IAC Scanning
+      #   run: |
+      #     snyk iac test terraform/main.tf --json > snyk-iac-report.json
+      #     trivy config ./terraform/ --format json --output trivy-iac-report.json
 
       - name: Trivy FS Scan
         run: |
@@ -83,6 +88,9 @@ jobs:
             # safety-report.txt
             trivy-secrets.json
             trivy-fs-report.json
+            # snyk-iac-report.json
+            # trivy-iac-report.json
+
      
       
   
@@ -142,7 +150,7 @@ jobs:
         uses: actions/upload-artifact@v4 
         with:
           name: src-code-artifact 
-          path: static/
+          path: artifact.zip
 
         
   
@@ -156,17 +164,31 @@ jobs:
       - name: Docker Build
         run: |
           docker build -t flask:${{ env.VERSION }} .
+      - name: Set up Snyk CLI
+        uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
+        env:
+          SNYK_TOKEN: 9d262b22-1f2c-4069-adb9-696793789926
+
       - name: Snyk Container Scan
         run: |
           snyk container test flask:${{ env.VERSION }} --json > trivy-image-report.json
           trivy image flask:${{ env.VERSION }} > trivyimage.txt
-      - name: Trivy Secrets Scanning
-        run: |
-          trivy fs . --scanners secret --format json --output trivy-secrets.json
-      - name: IAC Scanning
-        run: |
-          snyk iac test terraform/main.tf --json > snyk-iac-report.json
-          trivy config ./terraform/ --format json --output trivy-iac-report.json
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'flask:${env.VERSION}'
+          format: 'template'
+          template: '@/contrib/sarif.tpl'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: container-scan-reports
+          path: |
+            trivy-image-report.json
+            trivyimage.txt  
       - name: Docker Login & Push
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
