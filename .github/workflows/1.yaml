@@ -131,7 +131,7 @@ jobs:
         sonar-scanner \
            -Dsonar.projectKey=python-backend \
           -Dsonar.sources=. \
-          -Dsonar.host.url=http://34.55.243.214:9000 \
+          -Dsonar.host.url=http://34.121.208.218:9000 \
           -Dsonar.token=sqp_e61f34dbf5b675f5ee4894a35b49471fc6e88d6d
     
     # - name: Wait for SonarQube Quality Gate
@@ -219,6 +219,18 @@ jobs:
           chmod +x install-grype.sh
           sudo ./install-grype.sh -b /usr/local/bin
           grype --version
+
+      - name: Run the Anchore Grype scan action
+        uses: anchore/scan-action@d5aa5b6cb9414b0c7771438046ff5bcfa2854ed7
+        id: scan
+        with:
+          image: "localbuild/testimage:latest"
+          fail-build: true
+          severity-cutoff: critical
+      - name: Upload vulnerability report
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ steps.scan.outputs.sarif }}
   
  
 
