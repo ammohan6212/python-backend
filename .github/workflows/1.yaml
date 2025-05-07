@@ -59,19 +59,19 @@ jobs:
         uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
         env:
           SNYK_TOKEN: 9d262b22-1f2c-4069-adb9-696793789926
-      - name: Authenticate Snyk
-        run: snyk auth 9d262b22-1f2c-4069-adb9-696793789926
-
-      - name: Snyk Code test
-        run: snyk code test --sarif > snyk-code.sarif 
-        continue-on-error: true
-
       - name: Install Trivy
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
+
+      - name: Authenticate Snyk
+        run: snyk auth 9d262b22-1f2c-4069-adb9-696793789926
+
+      - name: Snyk Code test
+        run: snyk code test --sarif > snyk-code.sarif 
+        continue-on-error: true
 
       - name: Trivy Secrets Scanning
         run: |
@@ -128,11 +128,11 @@ jobs:
       
     - name: run sonar-scanner
       run: |
-        sonar-scanner \
-           -Dsonar.projectKey=python-backend \
-          -Dsonar.sources=. \
-          -Dsonar.host.url=http://34.121.208.218:9000 \
-          -Dsonar.token=sqp_e61f34dbf5b675f5ee4894a35b49471fc6e88d6d
+        sonar-scanner 
+          # -Dsonar.projectKey=python-backend \
+          # -Dsonar.sources=. \
+          # -Dsonar.host.url=http://34.121.208.218:9000 \
+          # -Dsonar.token=sqp_e61f34dbf5b675f5ee4894a35b49471fc6e88d6d
     
     # - name: Wait for SonarQube Quality Gate
     #   uses: sonarsource/sonarqube-quality-gate-action@master
@@ -213,6 +213,7 @@ jobs:
       #     chmod +x install-grype.sh
       #     sudo ./install-grype.sh -b /usr/local/bin
       #     grype --version
+
       - name: install the dockle to check the container 
         run: |
           VERSION=$(
@@ -241,7 +242,6 @@ jobs:
           path: |
             snyk-image-report.json
             trivy-results.txt
-            "${{ steps.scan.outputs.sarif }}"
 
       - name: upload Anchore scan SARIF report
         uses: github/codeql-action/upload-sarif@v3
