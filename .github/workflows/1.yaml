@@ -241,6 +241,7 @@ jobs:
           path: |
             snyk-image-report.json
             trivy-results.txt
+            grype-scan.txt
 
       
   
