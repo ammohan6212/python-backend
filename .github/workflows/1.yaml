@@ -213,6 +213,14 @@ jobs:
           path: |
             snyk-image-report.json
             trivy-results.txt
+      - name : install thr grype to check the cotnainer 
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh -o install-grype.sh
+          chmod +x install-grype.sh
+          sudo ./install-grype.sh -b /usr/local/bin
+          grype --version
+  
+ 
 
       # - name: Upload SARIF file
       #   uses: github/codeql-action/upload-sarif@v3
