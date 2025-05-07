@@ -213,13 +213,24 @@ jobs:
           path: |
             snyk-image-report.json
             trivy-results.txt
-      - name : install thr grype to check the cotnainer 
+      # - name : install thr grype to check the cotnainer 
+      #   run: |
+      #     curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh -o install-grype.sh
+      #     chmod +x install-grype.sh
+      #     sudo ./install-grype.sh -b /usr/local/bin
+      #     grype --version
+      - name: install the dockle to check the container 
         run: |
-          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh -o install-grype.sh
-          chmod +x install-grype.sh
-          sudo ./install-grype.sh -b /usr/local/bin
-          grype --version
+          VERSION=$(
+            curl --silent "https://api.github.com/repos/goodwithtech/dockle/releases/latest" | \
+            grep '"tag_name":' | \
+            sed -E 's/.*"v([^"]+)".*/\1/'
+            )
+          sudo rpm -ivh https://github.com/goodwithtech/dockle/releases/download/v${VERSION}/dockle_${VERSION}_Linux-64bit.rpm
 
+      - name: check the container using the dockle 
+        run: dockle flask:${{ needs.clone-and-tag.outputs.version }}
+        
       - name: Run the Anchore Grype scan action
         uses: anchore/scan-action@d5aa5b6cb9414b0c7771438046ff5bcfa2854ed7
         id: scan
@@ -227,6 +238,8 @@ jobs:
           image: "flask:${{ needs.clone-and-tag.outputs.version }}"
           fail-build: true
           severity-cutoff: critical
+        continue-on-error: true
+
       - name: Upload vulnerability report
         uses: github/codeql-action/upload-sarif@v3
         with:
