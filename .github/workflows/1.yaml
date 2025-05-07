@@ -226,14 +226,14 @@ jobs:
         run: dockle flask:${{ needs.clone-and-tag.outputs.version }}
 
       - name: Run the Anchore Grype scan action
-        uses: anchore/scan-action@d5aa5b6cb9414b0c7771438046ff5bcfa2854ed7
+        uses: anchore/scan-action@v6
         id: scan
         with:
           image: "flask:${{ needs.clone-and-tag.outputs.version }}"
           fail-build: true
           severity-cutoff: critical
-          output: 'grype-scan.txt'
         continue-on-error: true
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -241,7 +241,12 @@ jobs:
           path: |
             snyk-image-report.json
             trivy-results.txt
-            grype-scan.txt
+      - name: upload Anchore scan SARIF report
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ steps.scan.outputs.sarif }}
+      
+            
 
       
   
